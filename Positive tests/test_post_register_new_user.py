@@ -2,16 +2,16 @@ import logging
 import pytest
 import requests
 from Basic import Basic
+from variables import PositiveTestsVariables as Vars
 
-BaseUrl = "https://reqres.in/api/users"
+
+BaseUrl = "https://reqres.in/api/register"
 payload = {
-    "name": "morpheus",
-    "job": "leader"
+    "email": f'{Vars.baseEmail}',
+    "password": f'{Vars.basePassword}'
 }
-headers = {
-    'Connection': 'keep-alive'
-}
-timeout = 10
+headers = Vars.baseHeaders
+timeout = Vars.baseTimeout
 
 
 class TestGetListUsers:
@@ -26,16 +26,16 @@ class TestGetListUsers:
             pytest.skip("Failed to setup", allow_module_level=True)
 
     def test_status_code(self, req):
-        code = 201
+        code = 200
         assert req.is_status_code_right(code), "Status code " + \
                                                str(req.response.status_code) + " presented, instead of " + str(code)
 
     def test_response_time(self, req):
-        sec = 1.0
+        sec = Vars.baseResponseTime
         assert req.is_response_are_in_time(sec), f"Response was more  then {sec} ms"
 
     def test_message_for_status_code(self, req):
-        message = "Created"
+        message = "OK"
         assert req.is_message_for_status_code_are_correct(message), \
             f"Response message was {req.response.reason}, not {message}"
 
@@ -55,10 +55,8 @@ class TestGetListUsers:
         assert req.is_response_have_body(), "Response don't have body"
 
     def test_is_path_present_in_body(self, req):
-        path = '$.name'
-        assert req.is_path_present_in_body(path), f"Path \'{path}\' not presented in body"
+        path1 = '$.id'
+        assert req.is_path_present_in_body(path1), f"Path \'{path1}\' not presented in body"
+        path2 = '$.token'
+        assert req.is_path_present_in_body(path2), f"Path \'{path2}\' not presented in body"
 
-    def test_is_key_and_value_in_body(self, req):
-        path = '$.name'
-        value = 'morpheus'
-        assert req.is_key_and_value_in_body(path, value), f"Key|value pair not found"

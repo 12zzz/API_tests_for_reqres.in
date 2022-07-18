@@ -39,10 +39,15 @@ class Basic:
 
     # Проверка наличия значения у jsonpath в ответе
     def is_key_and_value_in_body(self, path, value):
+        return self.get_value_from_key(path) == value
+
+    # Вернуть значению по ключу
+    def get_value_from_key(self, path):
         path_expression = parse(path)
         try:
             searching_value = path_expression.find(self.response.json())[0].value
         except IndexError as e:
             return False
         else:
-            return searching_value == value
+            return searching_value
+
