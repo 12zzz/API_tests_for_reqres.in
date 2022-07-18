@@ -1,21 +1,25 @@
 import logging
 import pytest
-import requests
 from Basic import Basic
 from variables import PositiveTestsVariables as Vars
+from variables import GetSingleUserMockVariables as MV
+from MyMock import MyMock
+
 
 BaseUrl = f"https://reqres.in/api/users/{Vars.baseID}"
 payload = {}
 headers = Vars.baseHeaders
 timeout = Vars.baseTimeout
 
-
 class TestGetListUsers:
-    @pytest.fixture(scope="class", autouse=True)
+    @pytest.fixture(autouse=True)
     def req(self):
         try:
-            response = requests.request("GET", BaseUrl, headers=headers, data=payload, timeout=timeout)
-            request = Basic(response)
+            # Замена настоящего реквеста на мок
+            my_mock = MyMock(MV.mock_headers, MV.reason, MV.status_code, MV.text, MV.json, MV.response_seconds, MV.headers_get, MV.config)
+            #response = requests.request("GET", BaseUrl, headers=headers, data=payload, timeout=timeout)
+            mock_response = my_mock.setup()
+            request = Basic(mock_response)
             return request
         except:
             logging.exception("Failed to setup")
